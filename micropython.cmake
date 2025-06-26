@@ -1,5 +1,16 @@
-set(SRC_USERMOD
+# Opus User C Module for MicroPython
+
+# Define an INTERFACE library for this module
+add_library(usermod_opus INTERFACE)
+
+# Source files
+# Opusmod main binding
+set(OPUSMOD_BINDING_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/opusmod.c
+)
+
+# Opus library core sources (already in libopus/src/)
+set(OPUS_CORE_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/libopus/src/opus.c
     ${CMAKE_CURRENT_LIST_DIR}/libopus/src/opus_decoder.c
     ${CMAKE_CURRENT_LIST_DIR}/libopus/src/opus_encoder.c
@@ -10,17 +21,190 @@ set(SRC_USERMOD
     ${CMAKE_CURRENT_LIST_DIR}/libopus/src/analysis.c
     ${CMAKE_CURRENT_LIST_DIR}/libopus/src/mlp.c
     ${CMAKE_CURRENT_LIST_DIR}/libopus/src/mlp_data.c
-    # 批量添加 silk 和 celt
-    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/CNG.c
-    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/code_signs.c
-    # ... silk/*.c 所有文件
+)
+
+# CELT sources (user must place these files in libopus/src/celt/)
+set(CELT_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/bands.c
-    # ... celt/*.c 所有文件
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/celt.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/celt_decoder.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/celt_encoder.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/celt_lpc.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/cwrs.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/entcode.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/entdec.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/entenc.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/kiss_fft.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/laplace.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/mathops.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/mdct.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/modes.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/pitch.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/quant_bands.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/rate.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/celt/vq.c
 )
-set(INCLUDE_USERMOD
-    ${CMAKE_CURRENT_LIST_DIR}/libopus/include
+
+# SILK sources (user must place these in libopus/src/silk/)
+set(SILK_SOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/A2NLSF.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/CNG.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/LPC_analysis_filter.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/LPC_fit.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/LPC_inv_pred_gain.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/LP_variable_cutoff.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/NLSF2A.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/NLSF_VQ.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/NLSF_VQ_weights_laroia.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/NLSF_decode.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/NLSF_del_dec_quant.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/NLSF_encode.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/NLSF_stabilize.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/NLSF_unpack.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/NSQ.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/NSQ_del_dec.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/PLC.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/VQ_WMat_EC.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/ana_filt_bank_1.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/biquad_alt.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/bwexpander.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/bwexpander_32.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/check_control_input.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/code_signs.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/control_SNR.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/control_audio_bandwidth.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/control_codec.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/debug.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/dec_API.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/decode_core.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/decode_frame.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/decode_indices.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/decode_parameters.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/decode_pitch.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/decode_pulses.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/decoder_set_fs.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/enc_API.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/encode_indices.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/encode_pulses.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/gain_quant.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/HP_variable_cutoff.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/init_decoder.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/init_encoder.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/inner_prod_aligned.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/interpolate.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/lin2log.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/log2lin.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/pitch_est_tables.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/process_NLSFs.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/quant_LTP_gains.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/resampler.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/resampler_down2.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/resampler_down2_3.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/resampler_private_AR2.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/resampler_private_IIR_FIR.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/resampler_private_down_FIR.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/resampler_private_up2_HQ.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/resampler_rom.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/shell_coder.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/sigm_Q15.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/sort.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/stereo_LR_to_MS.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/stereo_MS_to_LR.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/stereo_decode_pred.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/stereo_encode_pred.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/stereo_find_predictor.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/stereo_quant_pred.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/sum_sqr_shift.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/table_LSF_cos.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/tables_LTP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/tables_NLSF_CB_NB_MB.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/tables_NLSF_CB_WB.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/tables_gain.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/tables_other.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/tables_pitch_lag.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/tables_pulses_per_block.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/VAD.c
 )
-set(CFLAGS_USERMOD
+
+# SILK fixed-point sources (user must place these in libopus/src/silk/fixed/)
+set(SILK_FIXED_SOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/LTP_analysis_filter_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/LTP_scale_ctrl_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/apply_sine_window_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/autocorr_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/burg_modified_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/corrMatrix_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/encode_frame_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/find_LPC_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/find_LTP_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/find_pitch_lags_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/find_pred_coefs_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/k2a_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/k2a_Q16_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/noise_shape_analysis_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/pitch_analysis_core_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/process_gains_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/regularize_correlations_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/residual_energy16_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/residual_energy_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/schur64_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/schur_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/vector_ops_FIX.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/fixed/warped_autocorrelation_FIX.c
+)
+
+# SILK float sources (user must place these in libopus/src/silk/float/)
+set(SILK_FLOAT_SOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/LPC_analysis_filter_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/LPC_inv_pred_gain_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/LTP_analysis_filter_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/LTP_scale_ctrl_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/apply_sine_window_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/autocorrelation_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/burg_modified_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/bwexpander_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/corrMatrix_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/encode_frame_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/energy_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/find_LPC_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/find_LTP_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/find_pitch_lags_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/find_pred_coefs_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/inner_product_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/k2a_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/noise_shape_analysis_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/pitch_analysis_core_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/process_gains_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/regularize_correlations_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/residual_energy_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/scale_copy_vector_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/scale_vector_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/schur_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/sort_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/warped_autocorrelation_FLP.c
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src/silk/float/wrappers_FLP.c
+)
+
+target_sources(usermod_opus INTERFACE
+    ${OPUSMOD_BINDING_SOURCES}
+    ${OPUS_CORE_SOURCES}
+    ${CELT_SOURCES}
+    ${SILK_SOURCES}
+    ${SILK_FIXED_SOURCES}
+    ${SILK_FLOAT_SOURCES}
+)
+
+# Include directories
+target_include_directories(usermod_opus INTERFACE
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/include  # Public API
+    ${CMAKE_CURRENT_LIST_DIR}/libopus/src      # For opus_private.h and its includes of celt/silk headers
+)
+
+# Compile definitions
+target_compile_definitions(usermod_opus INTERFACE
     -DOPUS_BUILD
     -Drestrict=
 )
+
+# Link the interface library to the main usermod target
+target_link_libraries(usermod INTERFACE usermod_opus)
